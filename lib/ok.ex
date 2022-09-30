@@ -30,6 +30,74 @@ defmodule OK do
   def map({:error, reason}, _func), do: {:error, reason}
 
   @doc """
+  Applies a function to the interior value of a result tuple.
+
+  If the tuple is tagged `:error` the value will be mapped by the function.
+  A tuple tagged `:ok` will be unchanged.
+
+  ## Examples
+
+      iex> OK.map_err({:ok, 2}, fn (x) -> 2 * x end)
+      {:ok, 2}
+
+      iex> OK.map_err({:error, "some reason"}, fn (x) -> String.len(x) end)
+      {:error, 11}
+  """
+  @spec map_err({:ok, a}, (any -> any)) :: {:ok, a} when a: any
+  @spec map_err({:error, reason}, (reason -> b)) :: {:error, b} when reason: any, b: any
+  def map_err({:ok, a}, _func), do: {:ok, a}
+  def map_err({:error, reason}, func) when is_function(func, 1), do: {:error, func.(reason)}
+
+  @doc """
+  TODO:
+
+  ## Examples
+
+    iex> TODO:
+  """
+  @spec unwrap!({:ok, a}) :: a when a: any
+  @spec unwrap!({:error, any}) :: none()
+  def unwrap!({:ok, a}), do: a
+  def unwrap!({:error, _reason}), do: raise "trying to unwrap :error"
+
+  @doc """
+  TODO:
+
+  ## Examples
+
+    iex> TODO:
+  """
+  @spec expect!({:ok, a}, any) :: a when a: any
+  @spec expect!({:error, any}, msg) :: none() when msg: binary()
+  def expect!({:ok, a}, _msg), do: a
+  def expect!({:error, _reason}, msg), do: raise msg
+
+  @doc """
+  TODO:
+
+  ## Examples
+
+    iex> TODO:
+  """
+  @spec unwrap_or({:ok, a}, any) :: a when a: any
+  @spec unwrap_or({:error, any}, b) :: b when b: any
+  def unwrap_or({:ok, a}, _b), do: a
+  def unwrap_or({:error, _reason}, b), do: b
+
+  @doc """
+  TODO:
+
+  ## Examples
+
+    iex> TODO:
+  """
+  @spec unwrap_or_else({:ok, a}, (-> any)) :: a when a: any
+  @spec unwrap_or_else({:error, any}, (-> b)) :: b when b: any
+  def unwrap_or_else({:ok, a}, _func), do: a
+  def unwrap_or_else({:error, _reason}, func) when is_function(func, 1), do: func.()
+
+
+  @doc """
   Takes a result tuple and a next function.
   If the result tuple is tagged as a success then its value will be passed to the next function.
   If the tag is failure then the next function is skipped.
